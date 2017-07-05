@@ -1,17 +1,18 @@
-var orientation = 'right';
-var activeBlock = {
-  templateName: '',
-  height: 0,
-  width: 0,
-  verticalHeight: 0,
-  horizontalHeight: 0,
-  verticalWidth: 0,
-  horizontalWidth: 0
-}
-var isFallSpeedFast = false;
-var fallSpeedFast = 4;
-var fallSpeedSlow = 2;
-var inactiveBlockCoords = [];
+// var orientation = 'right';
+// var activeBlock = {
+//   templateName: '',
+//   height: 0,
+//   width: 0,
+//   verticalHeight: 0,
+//   horizontalHeight: 0,
+//   verticalWidth: 0,
+//   horizontalWidth: 0
+// }
+// var isFallSpeedFast = false;
+// var fallSpeedFast = 4;
+// var fallSpeedSlow = 2;
+// var inactiveBlockCoords = [];
+var currentBlockCoords;
 
 function rotate() {
   var activeBlockContainer = $('.active-block');
@@ -126,9 +127,59 @@ $('.start').click(function() {
   start();
 })
 
-var template = _.template(
+function drawGrid() {
+  var template = _.template(
       "<%_.forEach(gridCoords, function (coord, index) {%>"
-      + "<div class='block' x=<%= gridCoords[index]['x'] %> y=<%= gridCoords[index]['y'] %> ></div>"
+      + "<div class='block' data-coords=<%= gridCoords[index]['x'] %>,<%= gridCoords[index]['y'] %> ></div>"
       + "<%})%>"
   );
-$("#output").html( template() );
+  $("#output").html( template() );
+}
+
+function eraseBlockCoords(callback) {
+  for (var point in currentBlockCoords) {
+    var coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
+    $("div[data-coords='" + coord + "']").css('background-color', 'white');
+  }
+  setTimeout(function() {
+    callback()
+  }, 0)
+  // callback();
+}
+
+function drawBlock(callback) {
+  for (var point in currentBlockCoords) {
+    var coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
+    $("div[data-coords='" + coord + "']").css('background-color', 'red');
+  }
+  
+}
+
+function updateBlockPosition() {
+  eraseBlockCoords(drawBlock);
+  for (var point in currentBlockCoords) {
+    // currentBlockCoords[point].x = currentBlockCoords[point].x + 1;
+    currentBlockCoords[point].y = currentBlockCoords[point].y + 1;
+  }
+}
+
+function startInterval() {
+  setInterval(function() {
+    updateBlockPosition()
+  }, 750)
+}
+
+function createBlock() {
+  // Make this Random
+  blockTypes = ['square '];
+  currentBlockCoords = blockDimensions['square'];
+  drawBlock();
+}
+
+function init() {
+  drawGrid();
+  createBlock();
+  startInterval();
+}
+
+init();

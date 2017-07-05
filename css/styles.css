@@ -5,16 +5,16 @@ body {
 }
 
 #game-board {
-  position: relative;
+  /*position: relative;*/
   border: 1px solid black;
   width: 300px;
   height: 600px; 
 }
 
-.block-container {
+/*.block-container {
   position: absolute;
   height: auto;
-}
+}*/
 
 .block {
   padding: 0;
