@@ -11,6 +11,7 @@ var activeBlock = {
 var isFallSpeedFast = false;
 var fallSpeedFast = 4;
 var fallSpeedSlow = 2;
+var inactiveBlockCoords = [];
 
 function rotate() {
   var activeBlockContainer = $('.active-block');
@@ -75,18 +76,32 @@ $(document).keydown(function(e){
   }
 })
 
+function isTouchingInactiveBlock() {
+  // inactiveBlockCoords.forEach(function(coords) {
+
+  // });
+}
+
+function buildInactiveBlockCoords(position) {
+  var coords = position;
+  inactiveBlockCoords.push(coords);
+}
+
 function freezeBlock() {
-  $('.active-block').removeClass('active-block');
+  var inactiveBlock = $('.active-block');
+  buildInactiveBlockCoords(inactiveBlock.position())
+  inactiveBlock.removeClass('active-block');
   createNewBlock();
 }
 
 function start() {
   setInterval(function(){
     var activeBlockContainer = $('.active-block');
+    var test = document.getElementsByClassName('active-block');
     currentTop = activeBlockContainer.position().top;
     var top;
     var activeBlockHeight = activeBlockContainer.find($('.rect-long'));
-    if (currentTop + activeBlock.height >= $('#game-board').height()) {
+    if (currentTop + activeBlock.height >= $('#game-board').height() || isTouchingInactiveBlock()) {
       freezeBlock();
       return
     };
