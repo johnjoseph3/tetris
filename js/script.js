@@ -1,4 +1,4 @@
-var orientation = 'down';
+var orientation = 'right';
 var activeBlock = {
   templateName: '',
   height: 0,
@@ -16,29 +16,29 @@ function rotate() {
   var activeBlockContainer = $('.active-block');
   switch(orientation) {
     case 'down':
-      activeBlockContainer.find($('.t')).hide();
-      activeBlockContainer.find($('.t-left')).show();
+      activeBlockContainer.find($('.rect-long')).attr({width: 25, height: 75, x: 25});
+      activeBlockContainer.find($('.rect-short')).attr({width: 25, height: 25, x: 0, y: 25});
       orientation = 'left';
       activeBlock.height = activeBlock.verticalHeight;
       activeBlock.width = activeBlock.verticalWidth;
       break;
     case 'left':
-      activeBlockContainer.find($('.t')).hide();
-      activeBlockContainer.find($('.t-up')).show();
+      activeBlockContainer.find($('.rect-long')).attr({width: 75, height: 25, x: 0, y: 25});
+      activeBlockContainer.find($('.rect-short')).attr({width: 25, height: 25, x: 25, y: 0});
       orientation = 'up';
       activeBlock.height = activeBlock.horizontalHeight;
       activeBlock.width = activeBlock.horizontalWidth;
       break;
      case 'up':
-      activeBlockContainer.find($('.t')).hide();
-      activeBlockContainer.find($('.t-right')).show();
+      activeBlockContainer.find($('.rect-long')).attr({width: 25, height: 75, x: 0, y: 0});
+      activeBlockContainer.find($('.rect-short')).attr({width: 25, height: 25, x: 25, y: 25});
       orientation = 'right';
       activeBlock.height = activeBlock.verticalHeight;
       activeBlock.width = activeBlock.verticalWidth;
       break;
      case 'right':
-      activeBlockContainer.find($('.t')).hide();
-      activeBlockContainer.find($('.t-down')).show();
+      activeBlockContainer.find($('.rect-long')).attr({width: 75, height: 25});
+      activeBlockContainer.find($('.rect-short')).attr({width: 25, height: 25});
       orientation = 'down';
       activeBlock.height = activeBlock.horizontalHeight;
       activeBlock.width = activeBlock.horizontalWidth;
@@ -76,8 +76,7 @@ $(document).keydown(function(e){
 })
 
 function freezeBlock() {
-  var inactiveBlock = $('.active-block');
-  inactiveBlock.removeClass('active-block');
+  $('.active-block').removeClass('active-block');
   createNewBlock();
 }
 
@@ -86,7 +85,7 @@ function start() {
     var activeBlockContainer = $('.active-block');
     currentTop = activeBlockContainer.position().top;
     var top;
-
+    var activeBlockHeight = activeBlockContainer.find($('.rect-long'));
     if (currentTop + activeBlock.height >= $('#game-board').height()) {
       freezeBlock();
       return

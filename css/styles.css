@@ -5,11 +5,7 @@
   height: 500px; 
 }
 
-.t-left, .t-up, .t-down {
-  display: none;
-}
-
 .block-container {
   position: absolute;
-  height: 50px;
+  height: auto;
 }
