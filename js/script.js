@@ -95,24 +95,24 @@ function freezeBlock() {
 }
 
 function start() {
-  setInterval(function(){
-    var activeBlockContainer = $('.active-block');
-    var test = document.getElementsByClassName('active-block');
-    currentTop = activeBlockContainer.position().top;
-    var top;
-    var activeBlockHeight = activeBlockContainer.find($('.rect-long'));
-    if (currentTop + activeBlock.height >= $('#game-board').height() || isTouchingInactiveBlock()) {
-      freezeBlock();
-      return
-    };
+  // setInterval(function(){
+  //   var activeBlockContainer = $('.active-block');
+  //   var test = document.getElementsByClassName('active-block');
+  //   currentTop = activeBlockContainer.position().top;
+  //   var top;
+  //   var activeBlockHeight = activeBlockContainer.find($('.rect-long'));
+  //   if (currentTop + activeBlock.height >= $('#game-board').height() || isTouchingInactiveBlock()) {
+  //     freezeBlock();
+  //     return
+  //   };
 
-    if (isFallSpeedFast) {
-      top = currentTop + fallSpeedFast;
-    } else {
-      top = currentTop + fallSpeedSlow;
-    }
-    activeBlockContainer.css('top', top);
-  }, 50);
+  //   if (isFallSpeedFast) {
+  //     top = currentTop + fallSpeedFast;
+  //   } else {
+  //     top = currentTop + fallSpeedSlow;
+  //   }
+  //   activeBlockContainer.css('top', top);
+  // }, 50);
 }
 
 function createNewBlock() {
@@ -122,6 +122,13 @@ function createNewBlock() {
 }
 
 $('.start').click(function() {
-  createNewBlock();
+  // createNewBlock();
   start();
 })
+
+var template = _.template(
+      "<%_.forEach(gridCoords, function (coord, index) {%>"
+      + "<div class='block' x=<%= gridCoords[index]['x'] %> y=<%= gridCoords[index]['y'] %> ></div>"
+      + "<%})%>"
+  );
+$("#output").html( template() );
