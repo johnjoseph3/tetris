@@ -1,11 +1,14 @@
-var currentBlockColor = 'red';
+var orientation = 'default';
+var currentBlockColor ;
 var boardColor = 'white';
 var isFallSpeedFast = false;
 var intervalId;
 var slowInterval = 750;
 var fastInterval = 250;
 var currentBlockCoords = [];
-var blockTypes = ['square'];
+var currentBlockName;
+var blockTypes = ['square', 'line'];
+var downArrowFired = false;
 
 function drawGrid() {
   var template = _.template(
@@ -17,8 +20,10 @@ function drawGrid() {
 }
 
 function createBlock() {
-  // TODO: Make the array index a random number within blockTypes length.
-  var blockCoords = blockDimensions[blockTypes[0]];
+  var randomNum = Math.floor(Math.random() * blockTypes.length);
+  currentBlockName = blockTypes[randomNum];
+  var blockCoords = blockDimensions[currentBlockName].default;
+  currentBlockColor = blockColors[currentBlockName]
   currentBlockCoords = _.map(blockCoords, _.clone);
   drawBlock();
 }
@@ -124,20 +129,45 @@ function verticalMove() {
   }
 }
 
+function mapCoords(orientation) {
+  var origin = currentBlockCoords[1];
+  var blockCoords = blockDimensions[currentBlockName][orientation];
+  var newCoords = _.map(blockCoords, _.clone);
+  eraseBlock();
+  var originX = origin.x;
+  var originY = origin.y;
+  currentBlockCoords = newCoords.map(function(coord) {
+    if (currentBlockName == 'line') {
+      if (orientation === 'right') {
+        newCoord = {
+          x: originX,
+          y: origin.y
+        };
+        originX++;
+        return newCoord;
+      } else {
+        newCoord = {
+            x: origin.x,
+            y: originY
+          };
+        originY++;
+        return newCoord;
+      }
+    }
+  });
+  drawBlock();
+}
+
 function rotate() {
-  var activeBlockContainer = $('.active-block');
+  if(currentBlockName === 'square') return;
   switch(orientation) {
-    case 'down':
-      orientation = 'left';
-      break;
-    case 'left':
-      orientation = 'up';
-      break;
-     case 'up':
+    case 'default':
       orientation = 'right';
+      mapCoords(orientation);
       break;
-     case 'right':
-      orientation = 'down';
+    case 'right':
+      orientation = 'default';
+      mapCoords(orientation);
       break;
   } 
 }
@@ -154,9 +184,24 @@ $(document).keydown(function(e){
       horizontalMove('right');
       break;
      case 40:
-      isFallSpeedFast = !isFallSpeedFast;
+      if(!downArrowFired) {
+        console.log('hiii')
+        isFallSpeedFast = true;
+        clearInterval(intervalId);
+        startInterval();
+        downArrowFired = true;
+      }
+      break
+  } 
+})
+
+$(document).keyup(function(e){
+  switch(e.which) {
+     case 40:
+      isFallSpeedFast = false;
       clearInterval(intervalId);
       startInterval();
+      downArrowFired = false;
       break;
   } 
 })
@@ -164,7 +209,7 @@ $(document).keydown(function(e){
 function startInterval() {
   var intervalSpeed = isFallSpeedFast ? fastInterval : slowInterval;
   intervalId = setInterval(function() {
-    verticalMove()
+    verticalMove();
   }, intervalSpeed)
 }
 
