@@ -1,91 +1,47 @@
-// var orientation = 'right';
-// var activeBlock = {
-//   templateName: '',
-//   height: 0,
-//   width: 0,
-//   verticalHeight: 0,
-//   horizontalHeight: 0,
-//   verticalWidth: 0,
-//   horizontalWidth: 0
-// }
-// var isFallSpeedFast = false;
-// var fallSpeedFast = 4;
-// var fallSpeedSlow = 2;
-// var inactiveBlockCoords = [];
 var currentBlockColor = 'red';
 var boardColor = 'white';
-var currentBlockCoords;
-
-function rotate() {
-  var activeBlockContainer = $('.active-block');
-  switch(orientation) {
-    case 'down':
-      activeBlockContainer.find($('.rect-long')).attr({width: 25, height: 75, x: 25});
-      activeBlockContainer.find($('.rect-short')).attr({width: 25, height: 25, x: 0, y: 25});
-      orientation = 'left';
-      activeBlock.height = activeBlock.verticalHeight;
-      activeBlock.width = activeBlock.verticalWidth;
-      break;
-    case 'left':
-      activeBlockContainer.find($('.rect-long')).attr({width: 75, height: 25, x: 0, y: 25});
-      activeBlockContainer.find($('.rect-short')).attr({width: 25, height: 25, x: 25, y: 0});
-      orientation = 'up';
-      activeBlock.height = activeBlock.horizontalHeight;
-      activeBlock.width = activeBlock.horizontalWidth;
-      break;
-     case 'up':
-      activeBlockContainer.find($('.rect-long')).attr({width: 25, height: 75, x: 0, y: 0});
-      activeBlockContainer.find($('.rect-short')).attr({width: 25, height: 25, x: 25, y: 25});
-      orientation = 'right';
-      activeBlock.height = activeBlock.verticalHeight;
-      activeBlock.width = activeBlock.verticalWidth;
-      break;
-     case 'right':
-      activeBlockContainer.find($('.rect-long')).attr({width: 75, height: 25});
-      activeBlockContainer.find($('.rect-short')).attr({width: 25, height: 25});
-      orientation = 'down';
-      activeBlock.height = activeBlock.horizontalHeight;
-      activeBlock.width = activeBlock.horizontalWidth;
-      break;
-  } 
-}
-
-$(document).keydown(function(e){
-  if(e.which === 37) {
-    horizontalMove('left');
-  }
-  if(e.which === 38) {
-    rotate();
-  }
-  if(e.which === 39) {
-    horizontalMove('right');
-  }
-  if(e.which === 40) {
-    isFallSpeedFast = !isFallSpeedFast;
-  }
-})
-
+var isFallSpeedFast = false;
+var intervalId;
+var slowInterval = 750;
+var fastInterval = 500;
 
 function drawGrid() {
   var template = _.template(
-      "<%_.forEach(gridCoords, function (coord, index) {%>"
-      + "<div class='block' data-coords=<%= gridCoords[index]['x'] %>,<%= gridCoords[index]['y'] %> ></div>"
-      + "<%})%>"
+    "<%_.forEach(gridCoords, function (coord, index) {%>"
+    + "<div class='block' data-coords=<%= gridCoords[index]['x'] %>,<%= gridCoords[index]['y'] %> ></div>"
+    + "<%})%>"
   );
   $("#output").html( template() );
 }
 
-function eraseBlock() {
-  for (var point in currentBlockCoords) {
-    var coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
-    $("div[data-coords='" + coord + "']").css('background-color', boardColor);
-  }
+function createBlock() {
+  currentBlockCoords = [
+        {x:1, y: 1},
+        {x:1, y: 2},
+        {x:2, y: 1},
+        {x:2, y: 2}
+  ];
+  drawBlock();
 }
 
 function drawBlock() {
   for (var point in currentBlockCoords) {
     var coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
     $("div[data-coords='" + coord + "']").css('background-color', currentBlockColor);
+  }
+}
+
+function freezeBlock() {
+  for (var point in currentBlockCoords) {
+    var coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
+    $("div[data-coords='" + coord + "']").attr('frozen', 'true');
+  }
+}
+
+function eraseBlock() {
+  for (var point in currentBlockCoords) {
+    var coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
+    $("div[data-coords='" + coord + "']").css('background-color', boardColor);
   }
 }
 
@@ -125,19 +81,54 @@ function verticalMove() {
       currentBlockCoords[point].y = currentBlockCoords[point].y + 1;
     }
     drawBlock();
+  } else {
+    freezeBlock();
+    createBlock();
   }
 }
 
-function startInterval() {
-  setInterval(function() {
-    verticalMove()
-  }, 750)
+function rotate() {
+  var activeBlockContainer = $('.active-block');
+  switch(orientation) {
+    case 'down':
+      orientation = 'left';
+      break;
+    case 'left':
+      orientation = 'up';
+      break;
+     case 'up':
+      orientation = 'right';
+      break;
+     case 'right':
+      orientation = 'down';
+      break;
+  } 
 }
 
-function createBlock() {
-  var blockTypes = ['square'];
-  currentBlockCoords = blockDimensions[blockTypes[0]];
-  drawBlock();
+$(document).keydown(function(e){
+  switch(e.which) {
+    case 37:
+      horizontalMove('left');
+      break;
+    case 38:
+      rotate();
+      break;
+     case 39:
+      horizontalMove('right');
+      break;
+     case 40:
+      isFallSpeedFast = !isFallSpeedFast;
+      clearInterval(intervalId);
+      startInterval();
+      break;
+  } 
+})
+
+function startInterval() {
+  var intervalSpeed = isFallSpeedFast ? fastInterval : slowInterval;
+  intervalId = setInterval(function() {
+    verticalMove()
+  }, intervalSpeed)
 }
 
 function init() {
