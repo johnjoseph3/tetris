@@ -12,6 +12,8 @@
 // var fallSpeedFast = 4;
 // var fallSpeedSlow = 2;
 // var inactiveBlockCoords = [];
+var currentBlockColor = 'red';
+var boardColor = 'white';
 var currentBlockCoords;
 
 function rotate() {
@@ -48,20 +50,6 @@ function rotate() {
   } 
 }
 
-function horizontalMove(direction) {
-  var activeBlockContainer = $('.active-block');
-  var leftPosition = activeBlockContainer.position().left;
-  if(direction === 'right') {
-    if (leftPosition < $('#game-board').width() - activeBlock.width) {
-      activeBlockContainer.css('left', leftPosition + 25);
-    }
-  } else {
-    if (leftPosition > $('#game-board')[0].offsetLeft) {
-      activeBlockContainer.css('left', activeBlockContainer.position().left - 25);
-    }
-  }
-}
-
 $(document).keydown(function(e){
   if(e.which === 37) {
     horizontalMove('left');
@@ -77,55 +65,6 @@ $(document).keydown(function(e){
   }
 })
 
-function isTouchingInactiveBlock() {
-  // inactiveBlockCoords.forEach(function(coords) {
-
-  // });
-}
-
-function buildInactiveBlockCoords(position) {
-  var coords = position;
-  inactiveBlockCoords.push(coords);
-}
-
-function freezeBlock() {
-  var inactiveBlock = $('.active-block');
-  buildInactiveBlockCoords(inactiveBlock.position())
-  inactiveBlock.removeClass('active-block');
-  createNewBlock();
-}
-
-function start() {
-  // setInterval(function(){
-  //   var activeBlockContainer = $('.active-block');
-  //   var test = document.getElementsByClassName('active-block');
-  //   currentTop = activeBlockContainer.position().top;
-  //   var top;
-  //   var activeBlockHeight = activeBlockContainer.find($('.rect-long'));
-  //   if (currentTop + activeBlock.height >= $('#game-board').height() || isTouchingInactiveBlock()) {
-  //     freezeBlock();
-  //     return
-  //   };
-
-  //   if (isFallSpeedFast) {
-  //     top = currentTop + fallSpeedFast;
-  //   } else {
-  //     top = currentTop + fallSpeedSlow;
-  //   }
-  //   activeBlockContainer.css('top', top);
-  // }, 50);
-}
-
-function createNewBlock() {
-  activeBlock = new Block();
-  var template = _.template( $('#' + activeBlock.templateName).text() );
-  $("#output").append( template({activeClass: 'active-block'}) );
-}
-
-$('.start').click(function() {
-  // createNewBlock();
-  start();
-})
 
 function drawGrid() {
   var template = _.template(
@@ -136,43 +75,68 @@ function drawGrid() {
   $("#output").html( template() );
 }
 
-function eraseBlockCoords(callback) {
+function eraseBlock() {
   for (var point in currentBlockCoords) {
     var coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
-    $("div[data-coords='" + coord + "']").css('background-color', 'white');
+    $("div[data-coords='" + coord + "']").css('background-color', boardColor);
   }
-  setTimeout(function() {
-    callback()
-  }, 0)
-  // callback();
 }
 
-function drawBlock(callback) {
+function drawBlock() {
   for (var point in currentBlockCoords) {
     var coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
-    $("div[data-coords='" + coord + "']").css('background-color', 'red');
+    $("div[data-coords='" + coord + "']").css('background-color', currentBlockColor);
   }
-  
 }
 
-function updateBlockPosition() {
-  eraseBlockCoords(drawBlock);
+function horizontalMove(direction) {
+  var distance;
+  var allXs = [];
+  direction === 'right' ? distance = 1 : distance = -1;
   for (var point in currentBlockCoords) {
-    // currentBlockCoords[point].x = currentBlockCoords[point].x + 1;
-    currentBlockCoords[point].y = currentBlockCoords[point].y + 1;
+    allXs.push(currentBlockCoords[point].x);
+  }
+  allXs = _.sortBy(allXs, function(num) {
+    return num;
+  });
+  var lowestX = allXs[0];
+  var highestX = allXs.reverse()[0];
+  if (direction === 'right' && highestX < 10 || direction === 'left' && lowestX > 1) {
+    eraseBlock();
+    for (var point in currentBlockCoords) {
+      currentBlockCoords[point].x = currentBlockCoords[point].x + distance;
+    }
+    drawBlock();
+  }
+}
+
+function verticalMove() {
+  var allYs = [];
+  for (var point in currentBlockCoords) {
+    allYs.push(currentBlockCoords[point].y);
+  }
+  allYs = _.sortBy(allYs, function(num) {
+    return num;
+  });
+  var highestY = allYs.reverse()[0];
+  if (highestY < 20) {
+    eraseBlock();
+    for (var point in currentBlockCoords) {
+      currentBlockCoords[point].y = currentBlockCoords[point].y + 1;
+    }
+    drawBlock();
   }
 }
 
 function startInterval() {
   setInterval(function() {
-    updateBlockPosition()
+    verticalMove()
   }, 750)
 }
 
 function createBlock() {
-  // Make this Random
-  blockTypes = ['square '];
-  currentBlockCoords = blockDimensions['square'];
+  var blockTypes = ['square'];
+  currentBlockCoords = blockDimensions[blockTypes[0]];
   drawBlock();
 }
 
