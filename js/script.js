@@ -3,7 +3,7 @@ var boardColor = 'white';
 var isFallSpeedFast = false;
 var intervalId;
 var slowInterval = 750;
-var fastInterval = 500;
+var fastInterval = 250;
 var currentBlockCoords = [];
 var blockTypes = ['square'];
 
@@ -46,17 +46,13 @@ function eraseBlock() {
 
 function horizontalMove(direction) {
   var distance;
-  var allXs = [];
   direction === 'right' ? distance = 1 : distance = -1;
-  for (var point in currentBlockCoords) {
-    allXs.push(currentBlockCoords[point].x);
-  }
-  allXs = _.sortBy(allXs, function(num) {
-    return num;
-  });
-  var lowestX = allXs[0];
-  var highestX = allXs.reverse()[0];
-  if (direction === 'right' && highestX < 10 || direction === 'left' && lowestX > 1) {
+  var currentBlockCoordsByHighx = _.sortBy(currentBlockCoords, function(coord) { 
+    return +coord.x;
+  }).reverse();
+  var highestX = currentBlockCoordsByHighx[0].x;
+  var lowestX = currentBlockCoordsByHighx[currentBlockCoordsByHighx.length - 1].x;
+  if ((direction === 'right' && highestX < 10 || direction === 'left' && lowestX > 1) && !isNextHorizontalBlockFrozen(currentBlockCoordsByHighx, highestX, lowestX, direction)) {
     eraseBlock();
     for (var point in currentBlockCoords) {
       currentBlockCoords[point].x = currentBlockCoords[point].x + distance;
@@ -65,7 +61,35 @@ function horizontalMove(direction) {
   }
 }
 
-function isNextBlockFrozen(currentBlockCoordsByHighY, highestY) {
+function isNextHorizontalBlockFrozen(currentBlockCoordsByHighx, highestX, lowestX, direction) {
+  var isNextBlockFrozen = false;
+
+  var filterdBlockCoordsByX = currentBlockCoordsByHighx.filter(function(coord) {
+    if (direction === 'right') {
+      return coord.x === highestX;
+    } else {
+      return coord.x === lowestX;
+    }
+  })
+
+  filterdBlockCoordsByX.forEach(function(coord) {
+    var nextX;
+    if (direction === 'right') {
+      nextX = coord.x + 1;
+    } else {
+      nextX = coord.x - 1;
+    }
+    var nextCoord = nextX + "," + coord.y;
+    var nextBlock = $("div[data-coords='" + nextCoord + "']");
+    if(nextBlock.attr('frozen')) {
+      isNextBlockFrozen = true;
+    }
+  })
+
+  return isNextBlockFrozen;
+}
+
+function isNextVerticalBlockFrozen(currentBlockCoordsByHighY, highestY) {
   var isNextBlockFrozen = false;
 
   var filterdBlockCoordsByHighY = currentBlockCoordsByHighY.filter(function(coord) {
@@ -88,7 +112,7 @@ function verticalMove() {
   }).reverse();
   var highestY = currentBlockCoordsByHighY[0].y;
 
-  if (highestY < 20 && !isNextBlockFrozen(currentBlockCoordsByHighY, highestY)) {
+  if (highestY < 20 && !isNextVerticalBlockFrozen(currentBlockCoordsByHighY, highestY)) {
     eraseBlock();
     for (var point in currentBlockCoords) {
       currentBlockCoords[point].y = currentBlockCoords[point].y + 1;
