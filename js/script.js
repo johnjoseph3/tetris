@@ -4,6 +4,8 @@ var isFallSpeedFast = false;
 var intervalId;
 var slowInterval = 750;
 var fastInterval = 500;
+var currentBlockCoords = [];
+var blockTypes = ['square'];
 
 function drawGrid() {
   var template = _.template(
@@ -15,12 +17,9 @@ function drawGrid() {
 }
 
 function createBlock() {
-  currentBlockCoords = [
-        {x:1, y: 1},
-        {x:1, y: 2},
-        {x:2, y: 1},
-        {x:2, y: 2}
-  ];
+  // TODO: Make the array index a random number within blockTypes length.
+  var blockCoords = blockDimensions[blockTypes[0]];
+  currentBlockCoords = _.map(blockCoords, _.clone);
   drawBlock();
 }
 
@@ -66,16 +65,30 @@ function horizontalMove(direction) {
   }
 }
 
+function isNextBlockFrozen(currentBlockCoordsByHighY, highestY) {
+  var isNextBlockFrozen = false;
+
+  var filterdBlockCoordsByHighY = currentBlockCoordsByHighY.filter(function(coord) {
+    return coord.y === highestY;
+  })
+
+  filterdBlockCoordsByHighY.forEach(function(coord) {
+    var nextCoord = coord.x + "," + (coord.y + 1);
+    var nextBlock = $("div[data-coords='" + nextCoord + "']");
+    if(nextBlock.attr('frozen')) {
+      isNextBlockFrozen = true;
+    }
+  })
+  return isNextBlockFrozen;
+}
+
 function verticalMove() {
-  var allYs = [];
-  for (var point in currentBlockCoords) {
-    allYs.push(currentBlockCoords[point].y);
-  }
-  allYs = _.sortBy(allYs, function(num) {
-    return num;
-  });
-  var highestY = allYs.reverse()[0];
-  if (highestY < 20) {
+  var currentBlockCoordsByHighY = _.sortBy(currentBlockCoords, function(coord) { 
+    return +coord.y;
+  }).reverse();
+  var highestY = currentBlockCoordsByHighY[0].y;
+
+  if (highestY < 20 && !isNextBlockFrozen(currentBlockCoordsByHighY, highestY)) {
     eraseBlock();
     for (var point in currentBlockCoords) {
       currentBlockCoords[point].y = currentBlockCoords[point].y + 1;
