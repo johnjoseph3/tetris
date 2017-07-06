@@ -1,4 +1,4 @@
-var orientation = 'default';
+var orientation;
 var currentBlockColor ;
 var boardColor = 'white';
 var isFallSpeedFast = false;
@@ -22,7 +22,8 @@ function drawGrid() {
 function createBlock() {
   var randomNum = Math.floor(Math.random() * blockTypes.length);
   currentBlockName = blockTypes[randomNum];
-  var blockCoords = blockDimensions[currentBlockName].default;
+  orientation = 'up';
+  var blockCoords = blockDimensions[currentBlockName][orientation];
   currentBlockColor = blockColors[currentBlockName]
   currentBlockCoords = _.map(blockCoords, _.clone);
   drawBlock();
@@ -57,7 +58,7 @@ function horizontalMove(direction) {
   }).reverse();
   var highestX = currentBlockCoordsByHighx[0].x;
   var lowestX = currentBlockCoordsByHighx[currentBlockCoordsByHighx.length - 1].x;
-  if ((direction === 'right' && highestX < 10 || direction === 'left' && lowestX > 1) && !isNextHorizontalBlockFrozen(currentBlockCoordsByHighx, highestX, lowestX, direction)) {
+  if ((direction === 'right' && highestX < 10 || direction === 'left' && lowestX > 1) && !isNextBlockFrozen(currentBlockCoordsByHighx, highestX, lowestX, 'horizontal' ,direction)) {
     eraseBlock();
     for (var point in currentBlockCoords) {
       currentBlockCoords[point].x = currentBlockCoords[point].x + distance;
@@ -66,48 +67,40 @@ function horizontalMove(direction) {
   }
 }
 
-function isNextHorizontalBlockFrozen(currentBlockCoordsByHighx, highestX, lowestX, direction) {
+function isNextBlockFrozen(currentBlockCoordsByHigh, highest, lowest, type, direction) {
   var isNextBlockFrozen = false;
 
-  var filterdBlockCoordsByX = currentBlockCoordsByHighx.filter(function(coord) {
-    if (direction === 'right') {
-      return coord.x === highestX;
-    } else {
-      return coord.x === lowestX;
+  var filterdBlockCoords = currentBlockCoordsByHigh.filter(function(coord) {
+    if (type === 'horizontal') {
+      if (direction === 'right') {
+        return coord.x === highest;
+      } else {
+        return coord.x === lowest;
+      }
+    } else if (type === 'vertical') {
+      return coord.y === highest;
     }
   })
 
-  filterdBlockCoordsByX.forEach(function(coord) {
-    var nextX;
-    if (direction === 'right') {
-      nextX = coord.x + 1;
-    } else {
-      nextX = coord.x - 1;
+  filterdBlockCoords.forEach(function(coord) {
+    if (type === 'horizontal') {
+      var nextX;
+      if (direction === 'right') {
+        nextX = coord.x + 1;
+      } else {
+        nextX = coord.x - 1;
+      }
+      var nextCoord = nextX + "," + coord.y;
+    } else if (type === 'vertical') {
+      var nextCoord = coord.x + "," + (coord.y + 1);
     }
-    var nextCoord = nextX + "," + coord.y;
+
     var nextBlock = $("div[data-coords='" + nextCoord + "']");
     if(nextBlock.attr('frozen')) {
       isNextBlockFrozen = true;
     }
   })
 
-  return isNextBlockFrozen;
-}
-
-function isNextVerticalBlockFrozen(currentBlockCoordsByHighY, highestY) {
-  var isNextBlockFrozen = false;
-
-  var filterdBlockCoordsByHighY = currentBlockCoordsByHighY.filter(function(coord) {
-    return coord.y === highestY;
-  })
-
-  filterdBlockCoordsByHighY.forEach(function(coord) {
-    var nextCoord = coord.x + "," + (coord.y + 1);
-    var nextBlock = $("div[data-coords='" + nextCoord + "']");
-    if(nextBlock.attr('frozen')) {
-      isNextBlockFrozen = true;
-    }
-  })
   return isNextBlockFrozen;
 }
 
@@ -117,7 +110,7 @@ function verticalMove() {
   }).reverse();
   var highestY = currentBlockCoordsByHighY[0].y;
 
-  if (highestY < 20 && !isNextVerticalBlockFrozen(currentBlockCoordsByHighY, highestY)) {
+  if (highestY < 20 && !isNextBlockFrozen(currentBlockCoordsByHighY, highestY, null, 'vertical')) {
     eraseBlock();
     for (var point in currentBlockCoords) {
       currentBlockCoords[point].y = currentBlockCoords[point].y + 1;
@@ -129,14 +122,24 @@ function verticalMove() {
   }
 }
 
+function isRotationOutOfBounds(newBlockCoords) {
+  var isRotationOutOfBounds = false;
+
+  newBlockCoords.forEach(function(coord) {
+    if(coord.x < 0 || coord.x > 10) isRotationOutOfBounds = true;
+    if(coord.y < 0 || coord.y > 20) isRotationOutOfBounds = true; 
+  });
+
+  return isRotationOutOfBounds;
+}
+
 function mapCoords(orientation) {
   var origin = currentBlockCoords[1];
-  var blockCoords = blockDimensions[currentBlockName][orientation];
-  var newCoords = _.map(blockCoords, _.clone);
-  eraseBlock();
+  var newOrientationCoords = _.map(blockDimensions[currentBlockName][orientation], _.clone);
   var originX = origin.x;
   var originY = origin.y;
-  currentBlockCoords = newCoords.map(function(coord) {
+
+  var newBlockCoords = newOrientationCoords.map(function(coord) {
     if (currentBlockName == 'line') {
       if (orientation === 'right') {
         newCoord = {
@@ -155,21 +158,28 @@ function mapCoords(orientation) {
       }
     }
   });
-  drawBlock();
+
+  if (!isRotationOutOfBounds(newBlockCoords)) {
+    eraseBlock();
+    currentBlockCoords = newBlockCoords;
+    drawBlock();
+  }
 }
 
 function rotate() {
   if(currentBlockName === 'square') return;
-  switch(orientation) {
-    case 'default':
-      orientation = 'right';
-      mapCoords(orientation);
-      break;
-    case 'right':
-      orientation = 'default';
-      mapCoords(orientation);
-      break;
-  } 
+    if (currentBlockName === 'line') {
+      switch(orientation) {
+      case 'up':
+        orientation = 'right';
+        mapCoords(orientation);
+        break;
+      case 'right':
+        orientation = 'up';
+        mapCoords(orientation);
+        break;
+    } 
+  }
 }
 
 $(document).keydown(function(e){
@@ -185,7 +195,6 @@ $(document).keydown(function(e){
       break;
      case 40:
       if(!downArrowFired) {
-        console.log('hiii')
         isFallSpeedFast = true;
         clearInterval(intervalId);
         startInterval();
