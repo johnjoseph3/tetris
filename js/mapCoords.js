@@ -97,6 +97,39 @@ const  mapCoords = (currentBlockCoords, currentBlockName, orientation) => {
       return newCoord;
     }
 
+    if (currentBlockName === 'l') {
+      let newCoord = {
+          x: originX,
+          y: originY
+        };
+      if (orientation === 'right') {
+        if (index !== 2) {
+          originY++;
+        } else {
+          originX++;
+        }
+      } else if (orientation === 'down') {
+        if (index !== 2) {
+          originX++;
+        } else {
+          originY--;
+        }
+      } else if (orientation === 'left') {
+        if (index !== 0) {
+          originY++;
+        } else {
+          originX++;
+        }
+      } else if (orientation === 'up') {
+        if (index !== 0) {
+          originX++;
+        } else {
+          originY--;
+        }
+      }
+      return newCoord;
+    }
+
   });
 
   if (!isRotationOutOfBounds(newBlockCoords) && !isRotationHittingFrozenBlock(newBlockCoords)) {
