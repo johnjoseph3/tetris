@@ -7,24 +7,58 @@ const  mapCoords = (currentBlockCoords, currentBlockName, orientation) => {
   let originX = origin.x;
   let originY = origin.y;
 
-  const newBlockCoords = newOrientationCoords.map(function(coord) {
+  const newBlockCoords = newOrientationCoords.map((coord, index) => {
+
     if (currentBlockName === 'line') {
-      if (orientation === 'right' || orientation === 'left') {
-        let newCoord = {
+      let newCoord = {
           x: originX,
           y: origin.y
         };
+      if (orientation === 'right' || orientation === 'left') {
         originX++;
-        return newCoord;
       } else {
-        let newCoord = {
-            x: origin.x,
-            y: originY
-          };
         originY++;
-        return newCoord;
       }
+      return newCoord;
     }
+
+    if (currentBlockName === 't') {
+      let newCoord = {
+          x: originX,
+          y: originY
+        };
+      if (orientation === 'right') {
+        if (index === 2 || index === 3) {
+          originX++;
+          originY--;
+        } else {
+          originY++;
+        }
+      } else if (orientation === 'down') {
+        if (index === 2 || index === 2) {
+          originX--;
+          originY++;
+        } else {
+          originX++;
+        }
+      } else if (orientation === 'left') {
+        if (index === 2 || index === 2) {
+          originX--;
+          originY++;
+        } else {
+          originY--;
+        }
+      } else if (orientation === 'up') {
+        if (index === 2 || index === 2) {
+          originX++;
+          originY--;
+        } else {
+          originX--;
+        }
+      }
+      return newCoord;
+    }
+
   });
 
   if (!isRotationOutOfBounds(newBlockCoords) && !isRotationHittingFrozenBlock(newBlockCoords)) {

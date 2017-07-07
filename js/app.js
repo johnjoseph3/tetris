@@ -5,7 +5,7 @@ import { isNextBlockFrozen } from './rotate';
 import mapCoords from './mapCoords';
 
 const boardColor = 'white';
-const blockTypes = ['line'];
+const blockTypes = ['t'];
 const slowInterval = 500;
 const fastInterval = 100;
 
