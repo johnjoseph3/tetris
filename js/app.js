@@ -1,9 +1,8 @@
 import blockColors from './blockColors';
 import gridCoords from './gridCoords';
 import blockDimensions from './blockDimensions';
-import { isNextBlockFrozen, mapCoords } from './rotate';
-import _ from 'underscore';
-import $ from 'jquery';
+import { isNextBlockFrozen } from './rotate';
+import mapCoords from './mapCoords';
 
 const boardColor = 'white';
 const blockTypes = ['line'];
@@ -96,16 +95,21 @@ const verticalMove = () => {
 
 const rotate = () => {
   if(currentBlockName === 'square') return;
-  if (currentBlockName === 'line') {
-    switch(orientation) {
-    case 'up':
-      orientation = 'right';
-      break;
-    case 'right':
-      orientation = 'up';
-      break;
-    } 
+  switch(orientation) {
+  case 'up':
+    orientation = 'right';
+    break;
+  case 'right':
+    orientation = 'down';
+    break;
+  case 'down':
+    orientation = 'left';
+    break;
+  case 'left':
+    orientation = 'up';
+    break;
   }
+
   const newBlockCoords = mapCoords(currentBlockCoords, currentBlockName, orientation);
   if (newBlockCoords) {
     eraseBlock();

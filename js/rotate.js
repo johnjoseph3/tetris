@@ -1,42 +1,9 @@
 import blockDimensions from './blockDimensions';
 
-const  mapCoords = (currentBlockCoords, currentBlockName, orientation) => {
-  const origin = currentBlockCoords[1];
-  const newOrientationCoords = _.map(blockDimensions[currentBlockName][orientation], _.clone);
-  let originX = origin.x;
-  let originY = origin.y;
-
-  const newBlockCoords = newOrientationCoords.map(function(coord) {
-    if (currentBlockName == 'line') {
-      if (orientation === 'right') {
-        let newCoord = {
-          x: originX,
-          y: origin.y
-        };
-        originX++;
-        return newCoord;
-      } else {
-        let newCoord = {
-            x: origin.x,
-            y: originY
-          };
-        originY++;
-        return newCoord;
-      }
-    }
-  });
-
-  if (!isRotationOutOfBounds(newBlockCoords) && !isRotationHittingFrozenBlock(newBlockCoords)) {
-    return newBlockCoords;
-  } else {
-    return false;
-  }
-}
-
 const isRotationOutOfBounds = (newBlockCoords) => {
   let isRotationOutOfBounds = false;
 
-  newBlockCoords.forEach(function(coord) {
+  newBlockCoords.forEach((coord) => {
     if(coord.x < 0 || coord.x > 10) isRotationOutOfBounds = true;
     if(coord.y < 0 || coord.y > 20) isRotationOutOfBounds = true; 
   });
@@ -44,7 +11,7 @@ const isRotationOutOfBounds = (newBlockCoords) => {
   return isRotationOutOfBounds;
 }
 
-function isRotationHittingFrozenBlock(newBlockCoords) {
+const isRotationHittingFrozenBlock = (newBlockCoords) => {
   let isRotationHittingFrozenBlock = false;
 
   const newBlockCoordsByHighX = _.sortBy(newBlockCoords, function(coord) { 
@@ -104,4 +71,4 @@ const isNextBlockFrozen = (currentBlockCoordsByHigh, highest, lowest, type, dire
   return isNextBlockFrozen;
 }
 
-export { isNextBlockFrozen, mapCoords };
+export { isNextBlockFrozen , isRotationOutOfBounds, isRotationHittingFrozenBlock };
