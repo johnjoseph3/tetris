@@ -1,13 +1,11 @@
-import blockDimensions from './blockDimensions';
 import { isRotationOutOfBounds, isRotationHittingFrozenBlock } from './rotate';
 
 const  mapCoords = (currentBlockCoords, currentBlockName, orientation) => {
   const origin = currentBlockCoords[1];
-  const newOrientationCoords = _.map(blockDimensions[currentBlockName][orientation], _.clone);
   let originX = origin.x;
   let originY = origin.y;
 
-  const newBlockCoords = newOrientationCoords.map((coord, index) => {
+  const newBlockCoords = currentBlockCoords.map((coord, index) => {
 
     if (currentBlockName === 'line') {
       let newCoord;

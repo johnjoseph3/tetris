@@ -30,7 +30,7 @@ const createBlock = () => {
   const randomNum = Math.floor(Math.random() * blockTypes.length);
   currentBlockName = blockTypes[randomNum];
   orientation = 'up';
-  const blockCoords = blockDimensions[currentBlockName][orientation];
+  const blockCoords = blockDimensions[currentBlockName];
   currentBlockColor = blockColors[currentBlockName];
   currentBlockCoords = _.map(blockCoords, _.clone);
   drawBlock();

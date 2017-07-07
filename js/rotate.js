@@ -3,8 +3,6 @@ import blockDimensions from './blockDimensions';
 const isRotationOutOfBounds = (newBlockCoords) => {
   let isRotationOutOfBounds = false;
 
-  console.log(newBlockCoords)
-
   newBlockCoords.forEach((coord) => {
     if(coord.x < 1 || coord.x > 10) isRotationOutOfBounds = true;
     if(coord.y < 0 || coord.y > 20) isRotationOutOfBounds = true; 
