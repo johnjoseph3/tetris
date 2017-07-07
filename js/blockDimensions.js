@@ -1,4 +1,4 @@
-var blockDimensions = {
+const blockDimensions = {
     square: {
       up: [
         {x:5, y: 1},
@@ -22,3 +22,5 @@ var blockDimensions = {
       ]
     }
 }    
+
+export default blockDimensions;
