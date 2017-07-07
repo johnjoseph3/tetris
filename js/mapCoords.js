@@ -38,25 +38,59 @@ const  mapCoords = (currentBlockCoords, currentBlockName, orientation) => {
           originY++;
         }
       } else if (orientation === 'down') {
-        if (index === 2 || index === 2) {
+        if (index === 2) {
           originX--;
-          originY++;
         } else {
           originX++;
         }
       } else if (orientation === 'left') {
-        if (index === 2 || index === 2) {
+        if (index === 2) {
           originX--;
           originY++;
         } else {
           originY--;
         }
       } else if (orientation === 'up') {
-        if (index === 2 || index === 2) {
+        if (index === 2) {
           originX++;
           originY--;
         } else {
           originX--;
+        }
+      }
+      return newCoord;
+    }
+
+    if (currentBlockName === 's') {
+      let newCoord = {
+          x: originX,
+          y: originY
+        };
+      if (orientation === 'right') {
+        if (index % 2 !== 0) {
+          originX++;
+        } else {
+          originY++;
+        }
+      } else if (orientation === 'down') {
+        if (index % 2 !== 0) {
+          originY++;
+        } else {
+          originX--;
+          originY--;
+        }
+      } else if (orientation === 'left') {
+        if (index % 2 !== 0) {
+          originX--;
+        } else {
+          originY++;
+        }
+      } else if (orientation === 'up') {
+        if (index % 2 !== 0) {
+          originY++;
+        } else {
+          originY--;
+          originX++;
         }
       }
       return newCoord;
