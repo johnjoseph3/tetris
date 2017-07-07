@@ -10,13 +10,18 @@ const  mapCoords = (currentBlockCoords, currentBlockName, orientation) => {
   const newBlockCoords = newOrientationCoords.map((coord, index) => {
 
     if (currentBlockName === 'line') {
-      let newCoord = {
+      let newCoord;
+      if (orientation === 'right' || orientation === 'left') {
+        newCoord = {
           x: originX,
           y: origin.y
         };
-      if (orientation === 'right' || orientation === 'left') {
         originX++;
       } else {
+        newCoord = {
+            x: origin.x,
+            y: originY
+          };
         originY++;
       }
       return newCoord;
