@@ -58,6 +58,7 @@ function horizontalMove(direction) {
   }).reverse();
   var highestX = currentBlockCoordsByHighx[0].x;
   var lowestX = currentBlockCoordsByHighx[currentBlockCoordsByHighx.length - 1].x;
+
   if ((direction === 'right' && highestX < 10 || direction === 'left' && lowestX > 1) && !isNextBlockFrozen(currentBlockCoordsByHighx, highestX, lowestX, 'horizontal' ,direction)) {
     eraseBlock();
     for (var point in currentBlockCoords) {
@@ -133,6 +134,28 @@ function isRotationOutOfBounds(newBlockCoords) {
   return isRotationOutOfBounds;
 }
 
+function isRotationHittingFrozenBlock(newBlockCoords) {
+  var isRotationHittingFrozenBlock = false;
+
+  var newBlockCoordsByHighX = _.sortBy(newBlockCoords, function(coord) { 
+    return +coord.x;
+  }).reverse();
+  var highestX = newBlockCoordsByHighX[0].x;
+  var lowestX = newBlockCoordsByHighX[newBlockCoordsByHighX.length - 1].x;
+
+  var newBlockCoordsByHighY = _.sortBy(newBlockCoords, function(coord) { 
+    return +coord.y;
+  }).reverse();
+  var highestY = newBlockCoordsByHighY[0].y;
+
+  if (isNextBlockFrozen(newBlockCoordsByHighY, highestY, null, 'vertical') ||
+      isNextBlockFrozen(newBlockCoordsByHighX, highestX, lowestX, 'horizontal'))
+    {
+      isRotationHittingFrozenBlock = true;
+    }
+  return isRotationHittingFrozenBlock;
+}
+
 function mapCoords(orientation) {
   var origin = currentBlockCoords[1];
   var newOrientationCoords = _.map(blockDimensions[currentBlockName][orientation], _.clone);
@@ -159,7 +182,7 @@ function mapCoords(orientation) {
     }
   });
 
-  if (!isRotationOutOfBounds(newBlockCoords)) {
+  if (!isRotationOutOfBounds(newBlockCoords) && !isRotationHittingFrozenBlock(newBlockCoords)) {
     eraseBlock();
     currentBlockCoords = newBlockCoords;
     drawBlock();
