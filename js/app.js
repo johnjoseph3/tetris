@@ -66,7 +66,7 @@ const horizontalMove = (direction) => {
   const highestX = currentBlockCoordsByHighx[0].x;
   const lowestX = currentBlockCoordsByHighx[currentBlockCoordsByHighx.length - 1].x;
 
-  if ((direction === 'right' && highestX < 10 || direction === 'left' && lowestX > 1) && !isNextBlockFrozen(currentBlockCoordsByHighx, highestX, lowestX, 'horizontal' ,direction)) {
+  if ((direction === 'right' && highestX < 10 || direction === 'left' && lowestX > 1) && !isNextBlockFrozen(currentBlockCoords, 'horizontal' , direction)) {
     eraseBlock();
     for (const point in currentBlockCoords) {
       currentBlockCoords[point].x = currentBlockCoords[point].x + distance;
@@ -76,12 +76,11 @@ const horizontalMove = (direction) => {
 };
 
 const verticalMove = () => {
-  const currentBlockCoordsByHighY = _.sortBy(currentBlockCoords, (coord) => {
+  const highestY = _.sortBy(currentBlockCoords, (coord) => {
     return +coord.y;
-  }).reverse();
-  const highestY = currentBlockCoordsByHighY[0].y;
+  }).reverse()[0].y;
 
-  if (highestY < 20 && !isNextBlockFrozen(currentBlockCoordsByHighY, highestY, null, 'vertical')) {
+  if (highestY < 20 && !isNextBlockFrozen(currentBlockCoords, 'vertical')) {
     eraseBlock();
     for (const point in currentBlockCoords) {
       currentBlockCoords[point].y = currentBlockCoords[point].y + 1;

@@ -3,8 +3,10 @@ import blockDimensions from './blockDimensions';
 const isRotationOutOfBounds = (newBlockCoords) => {
   let isRotationOutOfBounds = false;
 
+  console.log(newBlockCoords)
+
   newBlockCoords.forEach((coord) => {
-    if(coord.x < 0 || coord.x > 10) isRotationOutOfBounds = true;
+    if(coord.x < 1 || coord.x > 10) isRotationOutOfBounds = true;
     if(coord.y < 0 || coord.y > 20) isRotationOutOfBounds = true; 
   });
 
@@ -14,41 +16,18 @@ const isRotationOutOfBounds = (newBlockCoords) => {
 const isRotationHittingFrozenBlock = (newBlockCoords) => {
   let isRotationHittingFrozenBlock = false;
 
-  const newBlockCoordsByHighX = _.sortBy(newBlockCoords, function(coord) { 
-    return +coord.x;
-  }).reverse();
-  const highestX = newBlockCoordsByHighX[0].x;
-  const lowestX = newBlockCoordsByHighX[newBlockCoordsByHighX.length - 1].x;
-
-  const newBlockCoordsByHighY = _.sortBy(newBlockCoords, function(coord) { 
-    return +coord.y;
-  }).reverse();
-  const highestY = newBlockCoordsByHighY[0].y;
-
-  if (isNextBlockFrozen(newBlockCoordsByHighY, highestY, null, 'vertical') ||
-      isNextBlockFrozen(newBlockCoordsByHighX, highestX, lowestX, 'horizontal'))
+  if (isNextBlockFrozen(newBlockCoords, 'vertical') ||
+      isNextBlockFrozen(newBlockCoords, 'horizontal'))
     {
       isRotationHittingFrozenBlock = true;
     }
   return isRotationHittingFrozenBlock;
 }
 
-const isNextBlockFrozen = (currentBlockCoordsByHigh, highest, lowest, type, direction) => {
+const isNextBlockFrozen = (currentBlockCoords, type, direction) => {
   let isNextBlockFrozen = false;
-
-  const filterdBlockCoords = currentBlockCoordsByHigh.filter( (coord) => {
-    if (type === 'horizontal') {
-      if (direction === 'right') {
-        return coord.x === highest;
-      } else {
-        return coord.x === lowest;
-      }
-    } else if (type === 'vertical') {
-      return coord.y === highest;
-    }
-  })
-
-  filterdBlockCoords.forEach( (coord) => {
+  
+  currentBlockCoords.forEach( (coord) => {
     let nextCoord;
     if (type === 'horizontal') {
       let nextX;
