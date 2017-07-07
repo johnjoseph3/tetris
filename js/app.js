@@ -1,8 +1,9 @@
 import blockColors from './blockColors';
 import gridCoords from './gridCoords';
 import blockDimensions from './blockDimensions';
-import { isNextBlockFrozen, mapCoords } from './rotate'
-
+import { isNextBlockFrozen, mapCoords } from './rotate';
+import _ from 'underscore';
+import $ from 'jquery';
 
 const boardColor = 'white';
 const blockTypes = ['line'];
@@ -24,38 +25,38 @@ const drawGrid = () => {
     + "<%})%>"
   );
   $("#output").html( template({gridCoords}) );
-}
+};
 
 const createBlock = () => {
   const randomNum = Math.floor(Math.random() * blockTypes.length);
   currentBlockName = blockTypes[randomNum];
   orientation = 'up';
   const blockCoords = blockDimensions[currentBlockName][orientation];
-  currentBlockColor = blockColors[currentBlockName]
+  currentBlockColor = blockColors[currentBlockName];
   currentBlockCoords = _.map(blockCoords, _.clone);
   drawBlock();
-}
+};
 
 const drawBlock = () => {
   for (const point in currentBlockCoords) {
     const coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
     $("div[data-coords='" + coord + "']").css('background-color', currentBlockColor);
   }
-}
+};
 
 const freezeBlock = () => {
   for (const point in currentBlockCoords) {
     const coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
     $("div[data-coords='" + coord + "']").attr('frozen', 'true');
   }
-}
+};
 
 const eraseBlock = () => {
   for (const point in currentBlockCoords) {
     const coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
     $("div[data-coords='" + coord + "']").css('background-color', boardColor);
   }
-}
+};
 
 const horizontalMove = (direction) => {
   let distance;
@@ -73,9 +74,9 @@ const horizontalMove = (direction) => {
     }
     drawBlock();
   }
-}
+};
 
- const verticalMove = () => {
+const verticalMove = () => {
   const currentBlockCoordsByHighY = _.sortBy(currentBlockCoords, (coord) => {
     return +coord.y;
   }).reverse();
@@ -91,18 +92,18 @@ const horizontalMove = (direction) => {
     freezeBlock();
     createBlock();
   }
-}
+};
 
-function rotate() {
+const rotate = () => {
   if(currentBlockName === 'square') return;
-    if (currentBlockName === 'line') {
-      switch(orientation) {
-      case 'up':
-        orientation = 'right';
-        break;
-      case 'right':
-        orientation = 'up';
-        break;
+  if (currentBlockName === 'line') {
+    switch(orientation) {
+    case 'up':
+      orientation = 'right';
+      break;
+    case 'right':
+      orientation = 'up';
+      break;
     } 
   }
   const newBlockCoords = mapCoords(currentBlockCoords, currentBlockName, orientation);
@@ -111,52 +112,52 @@ function rotate() {
     currentBlockCoords = newBlockCoords;
     drawBlock();
   }
-}
+};
 
 $(document).keydown((e) => {
   switch(e.which) {
-    case 37:
-      horizontalMove('left');
-      break;
-    case 38:
-      rotate();
-      break;
-     case 39:
-      horizontalMove('right');
-      break;
-     case 40:
-      if(!downArrowFired) {
-        isFallSpeedFast = true;
-        clearInterval(intervalId);
-        startInterval();
-        downArrowFired = true;
-      }
-      break
+  case 37:
+    horizontalMove('left');
+    break;
+  case 38:
+    rotate();
+    break;
+  case 39:
+    horizontalMove('right');
+    break;
+  case 40:
+    if(!downArrowFired) {
+      isFallSpeedFast = true;
+      clearInterval(intervalId);
+      startInterval();
+      downArrowFired = true;
+    }
+    break;
   } 
-})
+});
 
 $(document).keyup((e) => {
   switch(e.which) {
-     case 40:
-      isFallSpeedFast = false;
-      clearInterval(intervalId);
-      startInterval();
-      downArrowFired = false;
-      break;
+  case 40:
+    isFallSpeedFast = false;
+    clearInterval(intervalId);
+    startInterval();
+    downArrowFired = false;
+    break;
   } 
-})
+});
 
 const startInterval = () => {
   const intervalSpeed = isFallSpeedFast ? fastInterval : slowInterval;
   intervalId = setInterval(function() {
     verticalMove();
-  }, intervalSpeed)
-}
+  }, intervalSpeed);
+};
 
 const init = () => {
   drawGrid();
   createBlock();
   startInterval();
-}
+};
 
 init();

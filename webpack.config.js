@@ -22,9 +22,9 @@
          colors: true
      },
      devtool: 'source-map',
-     plugins: [
-        new webpack.ProvidePlugin({
-            _: 'underscore'
-        }),
-    ]
+    //  plugins: [
+    //     new webpack.ProvidePlugin({
+    //         _: 'underscore'
+    //     }),
+    // ]
  };
