@@ -40,6 +40,7 @@ const  mapCoords = (currentBlockCoords, currentBlockName, orientation) => {
       } else if (orientation === 'down') {
         if (index === 2) {
           originX--;
+          originY++;
         } else {
           originX++;
         }
