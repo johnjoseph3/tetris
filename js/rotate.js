@@ -26,21 +26,23 @@ const isNextBlockFrozen = (currentBlockCoords, type, direction) => {
   let isNextBlockFrozen = false;
   
   currentBlockCoords.forEach( (coord) => {
-    let nextCoord;
+    let nextX;
+    let nextY;
     if (type === 'horizontal') {
-      let nextX;
       if (direction === 'right') {
         nextX = coord.x + 1;
       } else {
         nextX = coord.x - 1;
       }
-      nextCoord = nextX + "," + coord.y;
+      nextY = coord.y
     } else if (type === 'vertical') {
-      nextCoord = coord.x + "," + (coord.y + 1);
+      nextX = coord.x;
+      nextY = coord.y + 1
     }
 
-    const nextBlock = $("div[data-coords='" + nextCoord + "']");
-    if(nextBlock.attr('frozen')) {
+    const nextBlock = $("div[x='" + nextX + "']["  + " y='" + nextY + "']");
+    
+    if(nextBlock.attr('frozen') === "true") {
       isNextBlockFrozen = true;
     }
   })

@@ -20,7 +20,7 @@ let downArrowFired = false;
 const drawGrid = () => {
   var template = _.template(
     "<%_.forEach(gridCoords, function (coord, index) {%>"
-    + "<div class='block' data-coords=<%= gridCoords[index]['x'] %>,<%= gridCoords[index]['y'] %> ></div>"
+    + "<div class='block' frozen='false' state='inactive' x=<%= gridCoords[index]['x'] %> y=<%= gridCoords[index]['y'] %> ></div>"
     + "<%})%>"
   );
   $("#output").html( template({gridCoords}) );
@@ -38,22 +38,57 @@ const createBlock = () => {
 
 const drawBlock = () => {
   for (const point in currentBlockCoords) {
-    const coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
-    $("div[data-coords='" + coord + "']").css('background-color', currentBlockColor);
+    const block = $("div[x='" + currentBlockCoords[point].x + "']["  + " y='" + currentBlockCoords[point].y +  "']");
+    block.css('background-color', currentBlockColor);
+    block.attr('color', currentBlockColor);
+    $("div[x='" + currentBlockCoords[point].x + "']["  + " y='" + currentBlockCoords[point].y +  "']").attr('state', 'active');
   }
 };
 
 const freezeBlock = () => {
   for (const point in currentBlockCoords) {
-    const coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
-    $("div[data-coords='" + coord + "']").attr('frozen', 'true');
+    $("div[x='" + currentBlockCoords[point].x + "']["  + " y='" + currentBlockCoords[point].y +  "']").attr('frozen', 'true');
+  }
+};
+
+const shiftRowsDown = () => {
+  const frozenBlocks = $("div[frozen='true'")
+  $(frozenBlocks).css('background-color', boardColor);
+  $(frozenBlocks).attr('frozen', false);
+  for (const block of frozenBlocks) {
+    const y = parseInt($(block).attr('y')) + 1
+    const x = $(block).attr('x');
+    const nextBlock = $("div[x='" + x + "']["  + " y='" + y +  "']");
+    nextBlock.css('background-color', $(block).attr('color'));
+    nextBlock.attr('frozen', 'true')
+  }
+}
+
+const removeFullRows = () => {
+  let ys = [];
+  for (let coord of currentBlockCoords) {
+    ys.push(coord.y);
+  }
+  ys = _.uniq(ys);
+
+  for (const y of ys) {
+    const blocksInRow = $("div[y='" + y + "']");
+    let allBlocksAreFrozen = true;
+    for (const block of blocksInRow) {
+      if ($(block).attr('frozen') !== "true") {
+        allBlocksAreFrozen = false;
+      }
+    }
+    if (allBlocksAreFrozen) {
+      shiftRowsDown();
+    }
   }
 };
 
 const eraseBlock = () => {
   for (const point in currentBlockCoords) {
-    const coord = currentBlockCoords[point].x + ',' + currentBlockCoords[point].y;
-    $("div[data-coords='" + coord + "']").css('background-color', boardColor);
+    $("div[x='" + currentBlockCoords[point].x + "']["  + " y='" + currentBlockCoords[point].y +  "']").css('background-color', boardColor);
+    $("div[x='" + currentBlockCoords[point].x + "']["  + " y='" + currentBlockCoords[point].y +  "']").attr('state', 'inactive');
   }
 };
 
@@ -88,6 +123,7 @@ const verticalMove = () => {
     drawBlock();
   } else {
     freezeBlock();
+    removeFullRows();
     createBlock();
   }
 };
