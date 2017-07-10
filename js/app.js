@@ -1,20 +1,20 @@
-import blockColors from './blockColors';
 import gridCoords from './gridCoords';
-import blockDimensions from './blockDimensions';
-import { isNextBlockFrozen } from './rotate';
 import mapCoords from './mapCoords';
+import blockDimensions from './blockDimensions';
+import blockColors from './blockColors';
+import { isNextBlockFrozen } from './rotate';
 
 const boardColor = 'white';
 const blockTypes = ['square', 'line', 't', 's', 'l'];
 const slowInterval = 500;
 const fastInterval = 100;
 
-let isFallSpeedFast = false;
 let intervalId;
 let currentBlockCoords;
 let currentBlockName;
 let currentBlockColor;
 let orientation;
+let isFallSpeedFast = false;
 let downArrowFired = false;
 
 const drawGrid = () => {
@@ -52,17 +52,17 @@ const freezeBlock = () => {
 };
 
 const shiftRowsDown = () => {
-  const frozenBlocks = $("div[frozen='true'");
+  const frozenBlocks = $("div[frozen='true'")
   $(frozenBlocks).css('background-color', boardColor);
   $(frozenBlocks).attr('frozen', false);
   for (const block of frozenBlocks) {
-    const y = parseInt($(block).attr('y')) + 1;
+    const y = parseInt($(block).attr('y')) + 1
     const x = $(block).attr('x');
     const nextBlock = $("div[x='" + x + "']["  + " y='" + y +  "']");
     nextBlock.css('background-color', $(block).attr('color'));
-    nextBlock.attr('frozen', 'true');
+    nextBlock.attr('frozen', 'true')
   }
-};
+}
 
 const removeFullRows = () => {
   let ys = [];
