@@ -17,5 +17,9 @@ module.exports = {
             "error",
             "always"
         ]
+    },
+    "globals": {
+        "_": true,
+        "$": true
     }
 };

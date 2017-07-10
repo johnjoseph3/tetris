@@ -52,17 +52,17 @@ const freezeBlock = () => {
 };
 
 const shiftRowsDown = () => {
-  const frozenBlocks = $("div[frozen='true'")
+  const frozenBlocks = $("div[frozen='true'");
   $(frozenBlocks).css('background-color', boardColor);
   $(frozenBlocks).attr('frozen', false);
   for (const block of frozenBlocks) {
-    const y = parseInt($(block).attr('y')) + 1
+    const y = parseInt($(block).attr('y')) + 1;
     const x = $(block).attr('x');
     const nextBlock = $("div[x='" + x + "']["  + " y='" + y +  "']");
     nextBlock.css('background-color', $(block).attr('color'));
-    nextBlock.attr('frozen', 'true')
+    nextBlock.attr('frozen', 'true');
   }
-}
+};
 
 const removeFullRows = () => {
   let ys = [];
