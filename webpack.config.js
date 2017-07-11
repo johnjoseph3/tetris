@@ -3,7 +3,7 @@ var webpack = require('webpack');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
  module.exports = {
-     entry: './js/main.js',
+     entry: './client/js/main.js',
      output: {
          path: path.resolve(__dirname, 'build'),
          filename: 'app.bundle.js'
@@ -28,6 +28,9 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
         new webpack.ProvidePlugin({
             _: 'underscore'
         }),
-        new CopyWebpackPlugin([{ from: 'index.html'}, { from: 'css/styles.css'}])
+        new CopyWebpackPlugin([
+            { from: 'client/index.html'},
+            { from: 'client/css/styles.css'}
+        ])
     ]
  };
