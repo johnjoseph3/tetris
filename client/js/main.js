@@ -4,7 +4,7 @@ import blockDimensions from './blockDimensions';
 import blockColors from './blockColors';
 import { isNextBlockFrozen } from './rotate';
 
-const boardColor = 'white';
+const boardColor = '#162944';
 const blockTypes = ['square', 'line', 't', 's', 'l'];
 const slowInterval = 500;
 const fastInterval = 100;

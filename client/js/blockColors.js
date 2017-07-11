@@ -1,9 +1,9 @@
 const blockColors = {
-  square: 'yellow',
-  line: 'blue',
+  square: '#4717F6',
+  line: '#ff0101',
   t: 'purple',
-  s: 'green',
-  l: 'orange'
+  s: '#39FF14',
+  l: '#A239CA'
 }
 
 export default blockColors;
