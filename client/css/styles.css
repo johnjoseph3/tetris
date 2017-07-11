@@ -6,7 +6,7 @@ body {
   border: 2px solid rgb(216, 2, 134);
   width: 300px;
   height: 600px;
-  margin: 0 auto;
+  margin: 50px auto;
 }
 
 .block {
@@ -15,20 +15,18 @@ body {
   float: left;
 }
 
-/*@media only screen and (max-width: 760px) {
-  body {
-    background-color: white;
-  }
+@media only screen and (max-device-width: 760px) {
   #game-board {
     width: 600px;
     height: 1200px;
+    margin-top: 100px;
   }
 
   .block {
     width: 60px;
     height: 60px;
   }
-}*/
+}
 
 .btns-container {
   text-align: center;

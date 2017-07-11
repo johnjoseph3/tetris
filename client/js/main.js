@@ -6,7 +6,7 @@ import { isNextBlockFrozen } from './rotate';
 
 const boardColor = '#162944';
 const blockTypes = ['square', 'line', 't', 's', 'l'];
-const slowInterval = 500;
+const slowInterval = 300;
 const fastInterval = 100;
 
 let intervalId;
@@ -15,7 +15,6 @@ let currentBlockName;
 let currentBlockColor;
 let orientation;
 let isFallSpeedFast = false;
-let downArrowFired = false;
 
 const drawGrid = () => {
   var template = _.template(
@@ -153,6 +152,12 @@ const rotate = () => {
   }
 };
 
+const toggleSpeed = () => {
+  isFallSpeedFast = !isFallSpeedFast;
+  clearInterval(intervalId);
+  startInterval();
+}
+
 $(document).keydown((e) => {
   switch(e.which) {
   case 37:
@@ -165,23 +170,7 @@ $(document).keydown((e) => {
     horizontalMove('right');
     break;
   case 40:
-    if(!downArrowFired) {
-      isFallSpeedFast = true;
-      clearInterval(intervalId);
-      startInterval();
-      downArrowFired = true;
-    }
-    break;
-  } 
-});
-
-$(document).keyup((e) => {
-  switch(e.which) {
-  case 40:
-    isFallSpeedFast = false;
-    clearInterval(intervalId);
-    startInterval();
-    downArrowFired = false;
+    toggleSpeed();
     break;
   } 
 });
@@ -189,16 +178,7 @@ $(document).keyup((e) => {
 $('.left').click((e) => { horizontalMove('left'); });
 $('.right').click((e) => { horizontalMove('right'); });
 $('.rotate').click((e) =>{ rotate(); } );
-$('.fall-speed-fast').mousedown((e) => {
-  isFallSpeedFast = true;
-  clearInterval(intervalId);
-  startInterval();
-})
-$('.fall-speed-fast').mouseup((e) => {
-  isFallSpeedFast = false;
-  clearInterval(intervalId);
-  startInterval();
-})
+$('.fall-speed-fast').click((e) => { toggleSpeed(); });
 
 const startInterval = () => {
   const intervalSpeed = isFallSpeedFast ? fastInterval : slowInterval;
