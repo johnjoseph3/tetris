@@ -1,7 +1,7 @@
 const path = require('path');
 const express = require('express');
 const isDeveloping = process.env.NODE_ENV !== 'production';
-const port = isDeveloping ? 2000 : process.env.PORT;
+const port = isDeveloping ? 9000 : process.env.PORT;
 const app = express();
 
 if (isDeveloping) {
