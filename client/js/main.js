@@ -186,6 +186,20 @@ $(document).keyup((e) => {
   } 
 });
 
+$('.left').click((e) => { horizontalMove('left'); });
+$('.right').click((e) => { horizontalMove('right'); });
+$('.rotate').click((e) =>{ rotate(); } );
+$('.fall-speed-fast').mousedown((e) => {
+  isFallSpeedFast = true;
+  clearInterval(intervalId);
+  startInterval();
+})
+$('.fall-speed-fast').mouseup((e) => {
+  isFallSpeedFast = false;
+  clearInterval(intervalId);
+  startInterval();
+})
+
 const startInterval = () => {
   const intervalSpeed = isFallSpeedFast ? fastInterval : slowInterval;
   intervalId = setInterval(function() {

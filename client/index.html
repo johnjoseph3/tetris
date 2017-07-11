@@ -3,17 +3,19 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-
   <title>Tetris</title>
-
   <link rel="stylesheet" href="styles.css">
-
 </head>
-
 <body>
 
   <div id="game-board">
     <div id="output"></div>
+    <div class="btns-container">
+      <button class="left button_slide slide_left">Left</button>
+      <button class="right button_slide slide_left">Right</button>
+      <button class="fall-speed-fast button_slide slide_left down-rotate">Down</button>
+      <button class="rotate button_slide slide_left down-rotate">Rotate</button>
+    </div>
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
